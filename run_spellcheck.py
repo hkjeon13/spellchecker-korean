@@ -38,8 +38,6 @@ def text_concatenating(corpus, max_seq_len=490, sep_flag='[SEP]'):
 
 
 def spell_check(content, req):
-    query = []
-    append = query.append
     base_url= 'https://m.search.naver.com/p/csearch/ocontent/spellchecker.nhn'
     header = {
         'referer': 'https://search.naver.com/',
@@ -106,6 +104,6 @@ if __name__=='__main__':
         concated_texts = run_imap_multiprocessing(spell_chk, concated_texts, num_cores)
         concated_texts = list(chain(*[c.split(sep_flag) for c in concated_texts]))
         concated_texts = [c.strip() for c in concated_texts]
-        path_out = os.path.join(args.output_dir, args.output_flags+os.path.basename(fpath))
+        path_out = os.path.join(args.output_dir, args.output_flag+os.path.basename(fpath))
         save_contents =args.delimiter.join(concated_texts)
         save_text(path_out, save_contents)
