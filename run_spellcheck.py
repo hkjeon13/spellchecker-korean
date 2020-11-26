@@ -11,14 +11,14 @@ from multiprocessing import Pool, cpu_count
 
 
 parser = argparse.ArgumentParser()
+
 parser.add_argument('--input_dir', default=None, metavar='DIRECTORY', required=True, help='path for the directory of '
                                                                                           'inputs.')
 parser.add_argument('--output_dir', default=None, metavar='DIRECTORY', required=True, help='path for the directory of '
                                                                                            'outputs.')
 
-parser.add_argument('--output_flag', default='corrected_', metavar='DIRECTORY', required=True, help='flag for '
-                                                                                                    'distinguishing '
-                                                                                                    'the outputs.' )
+parser.add_argument('--output_flag', default='corrected_', metavar='DIRECTORY', help='flag for distinguishing the '
+                                                                                     'outputs.' )
 
 parser.add_argument('--num_cores', type=int, default=None, metavar='N',help='the number of cpu cores.')
 
@@ -38,7 +38,7 @@ def text_concatenating(corpus, max_seq_len=490, sep_flag='[SEP]'):
 
 
 def spell_check(content, req):
-    if content.strip()=='':
+    if not content.strip():
         return content
     query = []
     append = query.append
@@ -50,8 +50,9 @@ def spell_check(content, req):
         }
     payload = {
         '_callback':'window.__jindo2_callback._spellingCheck_0', 'q': content}
-
-    return correct(req.get(base_url, params=payload, headers = header).text)['html']
+    original_text = req.get(base_url, params=payload, headers = header).text
+    corrected = correct(original_text)['html']
+    return corrected
 
 
 def correct(content):
