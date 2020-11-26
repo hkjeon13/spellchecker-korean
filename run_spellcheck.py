@@ -15,9 +15,16 @@ parser.add_argument('--input_dir', default=None, metavar='DIRECTORY', required=T
                                                                                           'inputs.')
 parser.add_argument('--output_dir', default=None, metavar='DIRECTORY', required=True, help='path for the directory of '
                                                                                            'outputs.')
+
+parser.add_argument('--output_flag', default='corrected_', metavar='DIRECTORY', required=True, help='flag for '
+                                                                                                    'distinguishing '
+                                                                                                    'the outputs.' )
+
 parser.add_argument('--num_cores', type=int, default=None, metavar='N',help='the number of cpu cores.')
 
-parser.add_argument('--delimiter', default='\n', metavar='delimiter', help='delimiter for splitting the text in the input file.')
+parser.add_argument('--delimiter', default='\n', metavar='delimiter', help='delimiter for splitting the text in the '
+                                                                           'input file.')
+
 
 def text_concatenating(corpus, max_seq_len=490, sep_flag='[SEP]'):
     concated_corpus = ['']
@@ -100,6 +107,6 @@ if __name__=='__main__':
         concated_texts = run_imap_multiprocessing(spell_chk, concated_texts, num_cores)
         concated_texts = list(chain(*[c.split(sep_flag) for c in concated_texts]))
         concated_texts = [c.strip() for c in concated_texts]
-        path_out = os.path.join(args.output_dir, 'corrected_'+os.path.basename(fpath))
+        path_out = os.path.join(args.output_dir, args.output_flags+os.path.basename(fpath))
         save_contents =args.delimiter.join(concated_texts)
         save_text(path_out, save_contents)
