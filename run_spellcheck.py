@@ -38,8 +38,6 @@ def text_concatenating(corpus, max_seq_len=490, sep_flag='[SEP]'):
 
 
 def spell_check(content, req):
-    if not content.strip():
-        return content
     query = []
     append = query.append
     base_url= 'https://m.search.naver.com/p/csearch/ocontent/spellchecker.nhn'
