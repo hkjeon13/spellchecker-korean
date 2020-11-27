@@ -1,4 +1,4 @@
-# spell_checker_korean
+# spellchecker_korean
 hanspell 코드를 참고하여 쓰기 편하게 만들어 보았습니다.
 
 ## 실행 방법
