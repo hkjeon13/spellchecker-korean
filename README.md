@@ -1,4 +1,4 @@
-# korean-spellchecker (파이썬 한글 맞춤법 교정기)
+# spellchecker-korean (파이썬 한글 맞춤법 교정기)
 hanspell 코드를 참고하여 쓰기 편하게 만들어 보았습니다.
 
 ## 실행 방법
