@@ -17,7 +17,7 @@ parser.add_argument('--input_dir', default=None, metavar='DIRECTORY', required=T
 parser.add_argument('--output_dir', default=None, metavar='DIRECTORY', required=True, help='path for the directory of '
                                                                                            'outputs.')
 
-parser.add_argument('--output_flag', default='corrected_', metavar='DIRECTORY', help='flag for distinguishing the '
+parser.add_argument('--prefix', default='corrected_', metavar='DIRECTORY', help='flag for distinguishing the '
                                                                                      'outputs.' )
 
 parser.add_argument('--num_cores', type=int, default=None, metavar='N',help='the number of cpu cores.')
@@ -38,17 +38,21 @@ def text_concatenating(corpus, max_seq_len=490, sep_flag='[SEP]'):
 
 
 def spell_check(content, req):
-    base_url= 'https://m.search.naver.com/p/csearch/ocontent/spellchecker.nhn'
-    header = {
-        'referer': 'https://search.naver.com/',
-        'user-agent':'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) '
-                     'Chrome/57.0.2987.133 Safari/537.36 '
-        }
-    payload = {
-        '_callback':'window.__jindo2_callback._spellingCheck_0', 'q': content}
-    original_text = req.get(base_url, params=payload, headers = header).text
-    corrected = correct(original_text)['html']
-    return corrected
+    try:
+        base_url= 'https://m.search.naver.com/p/csearch/ocontent/spellchecker.nhn'
+        header = {
+            'referer': 'https://search.naver.com/',
+            'user-agent':'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) '
+                         'Chrome/57.0.2987.133 Safari/537.36 '
+            }
+        payload = {
+            '_callback':'window.__jindo2_callback._spellingCheck_0', 'q': content}
+        original_text = req.get(base_url, params=payload, headers = header).text
+        corrected = correct(original_text)['html']
+        return corrected
+    except Exception as e:
+        logging.info(e)
+        return content
 
 
 def correct(content):
@@ -102,8 +106,8 @@ if __name__=='__main__':
         concated_texts, sep_flag = text_concatenating(lines)
         spell_chk = partial(spell_check, req=req)
         concated_texts = run_imap_multiprocessing(spell_chk, concated_texts, num_cores)
-        concated_texts = list(chain(*[c.split(sep_flag) for c in concated_texts]))
+        concated_texts = list(chain(*[c.split(sep_flag) for c in concated_texts if isinstance(c, str)]))
         concated_texts = [c.strip() for c in concated_texts]
-        path_out = os.path.join(args.output_dir, args.output_flag+os.path.basename(fpath))
+        path_out = os.path.join(args.output_dir, args.prefix+os.path.basename(fpath))
         save_contents =args.delimiter.join(concated_texts)
         save_text(path_out, save_contents)
